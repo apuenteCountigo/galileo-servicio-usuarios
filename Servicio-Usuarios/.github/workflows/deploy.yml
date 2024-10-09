@@ -52,7 +52,7 @@ jobs:
             git pull &&
             cd Servicio-Usuarios &&
             export PATH=/opt/maven/bin:$PATH && mvn clean install -DskipTests &&
-            mv ./target/Servicio-Usuarios-0.0.1-SNAPSHOT.jar ../../Servicio-Usuarios.jar &&
+            mv ./target/Servicio-Usuarios-0.0.1-SNAPSHOT.jar ../../servicio-usuarios.jar &&
             cd ../../../ &&
             CONTAINER_NAME="servicio-usuarios" &&
             IMAGE_NAME=$(docker inspect --format='{{.Config.Image}}' "$CONTAINER_NAME") &&
