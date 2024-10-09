@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - version-1.1
   workflow_dispatch:
 jobs:
   run_pull:
@@ -45,16 +45,16 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             ssh -i ~/id_rsaalain mome@192.168.0.98 '
-            cd galileo-newdev/usuarios/galileo-servicio-usuarios &&
+            cd galileo-dev-v1.1/usuarios/galileo-servicio-usuarios &&
             git fetch origin &&
-            git checkout main &&
-            git reset --hard origin/main &&
+            git checkout version-1.1 &&
+            git reset --hard origin/version-1.1 &&
             git pull &&
             cd Servicio-Usuarios &&
             export PATH=/opt/maven/bin:$PATH && mvn clean install -DskipTests &&
-            mv ./target/servicio-operaciones-0.0.1-SNAPSHOT.jar ../../servicio-operaciones.jar &&
+            mv ./target/Servicio-Usuarios-0.0.1-SNAPSHOT.jar ../../Servicio-Usuarios.jar &&
             cd ../../../ &&
-            CONTAINER_NAME="servicio-operaciones" &&
+            CONTAINER_NAME="servicio-usuarios" &&
             IMAGE_NAME=$(docker inspect --format='{{.Config.Image}}' "$CONTAINER_NAME") &&
             if [[ -n "$IMAGE_NAME" ]]; then
               docker stop "$CONTAINER_NAME" &&
@@ -62,5 +62,5 @@ jobs:
               docker rmi "$IMAGE_NAME" &&
               echo "$IMAGE_NAME"
             fi;
-            docker compose up servicio-operaciones -d'
+            docker compose up servicio-usuarios -d'
             exit
