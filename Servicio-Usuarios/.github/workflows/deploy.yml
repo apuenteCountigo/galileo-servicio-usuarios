@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - INITDEPLOY
+      - main
   workflow_dispatch:
 jobs:
   run_pull:
@@ -45,12 +45,12 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             ssh -i ~/id_rsaalain mome@192.168.0.98 '
-            cd galileo-newdev/operaciones/galileo-servicio-operaciones &&
+            cd galileo-newdev/usuarios/galileo-servicio-usuarios &&
             git fetch origin &&
-            git checkout INITDEPLOY &&
-            git reset --hard origin/INITDEPLOY &&
+            git checkout main &&
+            git reset --hard origin/main &&
             git pull &&
-            cd servicio-operaciones &&
+            cd Servicio-Usuarios &&
             export PATH=/opt/maven/bin:$PATH && mvn clean install -DskipTests &&
             mv ./target/servicio-operaciones-0.0.1-SNAPSHOT.jar ../../servicio-operaciones.jar &&
             cd ../../../ &&
