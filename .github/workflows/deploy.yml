@@ -45,7 +45,12 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             ssh -i ~/id_rsaalain mome@192.168.0.98 '
-            cd galileo-dev-v1.1/usuarios/galileo-servicio-usuarios &&
+            cd galileo-dev-v1.1/usuarios &&
+            if [ ! -d "galileo-servicio-usuarios" ]; then
+              echo "validada galileo-dev-v1.1/usuarios/galileo-servicio-usuarios" &&
+              git clone https://github.com/apuenteCountigo/galileo-servicio-usuarios.git
+            fi
+            cd galileo-servicio-usuarios &&
             git fetch origin &&
             git checkout version-1.1 &&
             git reset --hard origin/version-1.1 &&
