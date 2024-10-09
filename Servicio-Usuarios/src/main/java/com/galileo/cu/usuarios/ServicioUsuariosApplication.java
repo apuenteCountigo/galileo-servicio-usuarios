@@ -20,7 +20,7 @@ public class ServicioUsuariosApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("**************************************");
-		System.out.println("Usuarios V-2024-10-09 09:51");
+		System.out.println("Usuarios V-2024-10-09 16:17");
 	}
 
 }
