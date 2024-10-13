@@ -107,24 +107,33 @@ public class UsuariosEventHandler {
 		} catch (Exception e) {
 			log.error("El error es aca");
 			String err = "Fallo al Insertar Usuario en Traccar, Ver logs, contacte a su administrador.";
+			// Revisa si el mensaje contiene el JSON de error
 			if (e.getMessage().contains("[{\"timestamp\":\"")) {
 				log.error("El error vino de Traccar....");
 				ErrorFeign errorFeign = new ErrorFeign();
 
 				try {
-					log.error("Este es el error {}", e.getMessage());
-					errorFeign = objectMapper.readValue(e.getMessage(), ErrorFeign.class);
+					// Encuentra el inicio y fin del JSON
+					int jsonStart = e.getMessage().indexOf("[{");
+					int jsonEnd = e.getMessage().lastIndexOf("}]") + 2;
+
+					// Extrae solo el JSON y deserialízalo
+					String json = e.getMessage().substring(jsonStart, jsonEnd);
+					errorFeign = objectMapper.readValue(json, ErrorFeign.class);
+
+					err = errorFeign.getMessage();
+					log.error("El error de Traccar es: {}", err);
+
 				} catch (JsonMappingException e1) {
 					err = "Fallo mapeando el objeto de error enviado por apis, al intentar insertar un usuario en Traccar.";
 				} catch (JsonProcessingException e1) {
 					err = "Fallo procesando la deserialización del error enviado por apis, al intentar insertar un usuario en Traccar.";
 				}
-				err = errorFeign.getMessage();
-				log.error("El error de Traccar es: {}", err);
-			} else if (e.getMessage().contains("Fallo"))
+			} else if (e.getMessage().contains("Fallo")) {
 				err = e.getMessage();
+			}
 
-			log.error(err, e.getMessage());
+			log.error(err, e);
 			throw new RuntimeException(err);
 		}
 	}
