@@ -102,8 +102,11 @@ public class UsuariosEventHandler {
 			user.setTraccar(usuarioUpdate.getTraccar());
 
 		} catch (Exception e) {
-			log.error("Fallo al Insertar Usuario en Traccar ", e.getMessage());
-			throw new RuntimeException("Fallo al Insertar Usuario en Traccar ");
+			String err = "Fallo al Insertar Usuario en Traccar ";
+			if (e.getMessage().contains("Fallo"))
+				err = e.getMessage();
+			log.error(err, e.getMessage());
+			throw new RuntimeException(err);
 		}
 	}
 
