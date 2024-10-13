@@ -107,7 +107,8 @@ public class UsuariosEventHandler {
 		} catch (Exception e) {
 			log.error("El error es aca");
 			String err = "Fallo al Insertar Usuario en Traccar, Ver logs, contacte a su administrador.";
-			// Revisa si el mensaje contiene el JSON de error
+
+			// Revisa si el mensaje contiene el JSON de error en formato array
 			if (e.getMessage().contains("[{\"timestamp\":\"")) {
 				log.error("El error vino de Traccar....");
 				ErrorFeign errorFeign = new ErrorFeign();
@@ -117,9 +118,12 @@ public class UsuariosEventHandler {
 					int jsonStart = e.getMessage().indexOf("[{");
 					int jsonEnd = e.getMessage().lastIndexOf("}]") + 2;
 
-					// Extrae solo el JSON y deserialízalo
-					String json = e.getMessage().substring(jsonStart, jsonEnd);
-					errorFeign = objectMapper.readValue(json, ErrorFeign.class);
+					// Extrae solo el JSON (array) y elimina los corchetes
+					String jsonArray = e.getMessage().substring(jsonStart, jsonEnd);
+					String jsonObject = jsonArray.substring(1, jsonArray.length() - 1); // Quita los corchetes de array
+
+					// Deserializa el objeto JSON
+					errorFeign = objectMapper.readValue(jsonObject, ErrorFeign.class);
 
 					err = errorFeign.getMessage();
 					log.error("El error de Traccar es: {}", err);
