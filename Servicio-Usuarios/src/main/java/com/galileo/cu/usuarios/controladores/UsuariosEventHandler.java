@@ -105,8 +105,9 @@ public class UsuariosEventHandler {
 			user.setTraccar(usuarioUpdate.getTraccar());
 
 		} catch (Exception e) {
+			log.error("El error es aca");
 			String err = "Fallo al Insertar Usuario en Traccar, Ver logs, contacte a su administrador.";
-			if (e.getMessage().contains("\"message\": \"")) {
+			if (e.getMessage().contains(",\\\"message\\\":")) {
 				log.error("El error vino de Traccar....");
 				ErrorFeign errorFeign = new ErrorFeign();
 
