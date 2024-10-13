@@ -116,6 +116,7 @@ public class UsuariosEventHandler {
 				} catch (JsonProcessingException e1) {
 					err = "Fallo procesando la deserialización del error enviado por apis, al intentar insertar un usuario en Traccar.";
 				}
+				err = errorFeign.getMessage();
 			} else if (e.getMessage().contains("Fallo"))
 				err = e.getMessage();
 
