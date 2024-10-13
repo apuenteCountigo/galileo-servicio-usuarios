@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galileo.cu.commons.models.AccionEntidad;
 import com.galileo.cu.commons.models.Permisos;
@@ -20,6 +22,7 @@ import com.galileo.cu.commons.models.TipoEntidad;
 import com.galileo.cu.commons.models.Trazas;
 import com.galileo.cu.commons.models.UnidadesUsuarios;
 import com.galileo.cu.commons.models.Usuarios;
+import com.galileo.cu.commons.models.dto.ErrorFeign;
 import com.galileo.cu.usuarios.cliente.TraccarFeign;
 import com.galileo.cu.usuarios.repositorios.PermisosRepository;
 import com.galileo.cu.usuarios.repositorios.TrazasRepository;
@@ -102,9 +105,20 @@ public class UsuariosEventHandler {
 			user.setTraccar(usuarioUpdate.getTraccar());
 
 		} catch (Exception e) {
-			String err = "Fallo al Insertar Usuario en Traccar ";
-			if (e.getMessage().contains("Fallo"))
+			String err = "Fallo al Insertar Usuario en Traccar, Ver logs, contacte a su administrador.";
+			if (e.getMessage().contains("\"message\": \"")) {
+				ErrorFeign errorFeign = new ErrorFeign();
+
+				try {
+					errorFeign = objectMapper.readValue(e.getMessage(), ErrorFeign.class);
+				} catch (JsonMappingException e1) {
+					err = "Fallo mapeando el objeto de error enviado por apis, al intentar insertar un usuario en Traccar.";
+				} catch (JsonProcessingException e1) {
+					err = "Fallo procesando la deserialización del error enviado por apis, al intentar insertar un usuario en Traccar.";
+				}
+			} else if (e.getMessage().contains("Fallo"))
 				err = e.getMessage();
+
 			log.error(err, e.getMessage());
 			throw new RuntimeException(err);
 		}
