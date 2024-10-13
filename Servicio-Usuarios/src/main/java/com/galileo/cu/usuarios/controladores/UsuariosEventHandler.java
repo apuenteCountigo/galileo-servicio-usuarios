@@ -107,6 +107,7 @@ public class UsuariosEventHandler {
 		} catch (Exception e) {
 			String err = "Fallo al Insertar Usuario en Traccar, Ver logs, contacte a su administrador.";
 			if (e.getMessage().contains("\"message\": \"")) {
+				log.error("El error vino de Traccar....");
 				ErrorFeign errorFeign = new ErrorFeign();
 
 				try {
@@ -117,6 +118,7 @@ public class UsuariosEventHandler {
 					err = "Fallo procesando la deserialización del error enviado por apis, al intentar insertar un usuario en Traccar.";
 				}
 				err = errorFeign.getMessage();
+				log.error("El error de Traccar es: {}", err);
 			} else if (e.getMessage().contains("Fallo"))
 				err = e.getMessage();
 
