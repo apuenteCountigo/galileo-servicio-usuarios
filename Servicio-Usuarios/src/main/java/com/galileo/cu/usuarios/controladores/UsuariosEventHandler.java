@@ -112,6 +112,7 @@ public class UsuariosEventHandler {
 				ErrorFeign errorFeign = new ErrorFeign();
 
 				try {
+					log.error("Este es el error {}", e.getMessage());
 					errorFeign = objectMapper.readValue(e.getMessage(), ErrorFeign.class);
 				} catch (JsonMappingException e1) {
 					err = "Fallo mapeando el objeto de error enviado por apis, al intentar insertar un usuario en Traccar.";
