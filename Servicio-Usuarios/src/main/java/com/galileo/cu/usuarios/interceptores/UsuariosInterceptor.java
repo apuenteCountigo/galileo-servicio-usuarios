@@ -31,26 +31,19 @@ public class UsuariosInterceptor implements HandlerInterceptor {
 		System.out.println("USUARIOS INTERCEPTOR***" + request.getMethod() + "*******************");
 
 		if (request.getMethod().equals("GET")) {
-			System.out.println("Authorization: "+request.getHeader("Authorization"));
+			System.out.println("Authorization: " + request.getHeader("Authorization"));
 			if (!Strings.isNullOrEmpty(request.getHeader("Authorization"))) {
 				String token = request.getHeader("Authorization").replace("Bearer ", "");
-				System.out.println(token.toString());
-				
+
 				try {
 					String[] chunks = token.split("\\.");
 					Base64.Decoder decoder = Base64.getUrlDecoder();
 					String header = new String(decoder.decode(chunks[0]));
 					String payload = new String(decoder.decode(chunks[1]));
 
-					System.out.println(payload.toString());
-
 					JwtObjectMap jwtObjectMap = objectMapper.readValue(payload.toString().replace("Perfil", "perfil"),
 							JwtObjectMap.class);
-					System.out.println(jwtObjectMap.getId());
 
-					System.out.println("Path:" + request.getRequestURI());
-					System.out.println("Descripcion:" + jwtObjectMap.getPerfil().getDescripcion());
-					
 					if ((request.getRequestURI().equals("/usuarios/search/buscarUsuarios")
 							|| request.getRequestURI().equals("/usuarios/search/asignados")
 							|| request.getRequestURI().equals("/usuarios/search/findByNombre")
@@ -58,10 +51,7 @@ public class UsuariosInterceptor implements HandlerInterceptor {
 							&& (jwtObjectMap.getPerfil().getDescripcion().equals("Usuario Final")
 									|| jwtObjectMap.getPerfil().getDescripcion().equals("Invitado Externo")
 									|| jwtObjectMap.getPerfil().getDescripcion().equals("Administrador de Unidad"))) {
-						
-						System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
-						System.out.println("id parametro: " + request.getParameter("idAuth"));
-						
+
 						if (jwtObjectMap.getId().equals(request.getParameter("idAuth"))) {
 							return true;
 						} else {
@@ -76,7 +66,7 @@ public class UsuariosInterceptor implements HandlerInterceptor {
 
 							return false;
 						}
-					}else {
+					} else {
 						System.out.println("El Usuario es Super Administrador o Esta Accediendo a rutas Libres");
 					}
 				} catch (Exception e) {
@@ -93,21 +83,23 @@ public class UsuariosInterceptor implements HandlerInterceptor {
 
 			} else {
 				System.out.println("NO HAY TOKEN");
-				//buscarTip 
-				if (request.getRequestURI().equals("/usuarios/search/buscarTip") || request.getRequestURI().equals("/usuarios/search/buscarTip")) {
+				// buscarTip
+				if (request.getRequestURI().equals("/usuarios/search/buscarTip")
+						|| request.getRequestURI().equals("/usuarios/search/buscarTip")) {
 					return true;
 				}
 				response.resetBuffer();
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				response.setHeader("Content-Type", "application/json;charset=UTF-8");
-				String s="{\"errorMessage\":\"Necesita enviar un Token Válido "+request.getMethod()+" Servicio-Usuarios!\"}";
+				String s = "{\"errorMessage\":\"Necesita enviar un Token Válido " + request.getMethod()
+						+ " Servicio-Usuarios!\"}";
 				response.getOutputStream().write(s.getBytes("UTF-8"));
 				response.flushBuffer();
 
 				return false;
 			}
 		} else if (request.getMethod().equals("DELETE")) {
-			
+
 		} else {
 			System.out.println("NO GET");
 		}
